@@ -469,6 +469,11 @@ namespace Jellyfin.Api.Controllers
                     }).Where(i => i != null).Select(i => i!.Id).ToArray();
                 }
 
+                if (user.HasPermission(PermissionKind.EnforceModeration))
+                {
+                    query.IsReplayable = true;
+                }
+
                 // Apply default sorting if none requested
                 if (query.OrderBy.Count == 0)
                 {

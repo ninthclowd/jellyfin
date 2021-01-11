@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
@@ -135,6 +136,14 @@ namespace Jellyfin.Api.Helpers
                 }
 
                 result.PlaySessionId = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
+            }
+
+            if (item is IHasCanReplay replayable)
+            {
+                if (!replayable.CanReplay(user))
+                {
+                    result.ErrorCode ??= PlaybackErrorCode.NotAllowed;
+                }
             }
 
             return result;
