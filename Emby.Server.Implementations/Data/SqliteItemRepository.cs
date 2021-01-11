@@ -298,6 +298,7 @@ namespace Emby.Server.Implementations.Data
                     AddColumn(db, "TypedBaseItems", "Width", "INT", existingColumnNames);
                     AddColumn(db, "TypedBaseItems", "Height", "INT", existingColumnNames);
                     AddColumn(db, "TypedBaseItems", "Size", "BIGINT", existingColumnNames);
+                    AddColumn(db, "TypedBaseItems", "MinHoursBetweenReplays", "INT", existingColumnNames);
 
                     existingColumnNames = GetColumnNames(db, "ItemValues");
                     AddColumn(db, "ItemValues", "CleanValue", "Text", existingColumnNames);
@@ -398,7 +399,8 @@ namespace Emby.Server.Implementations.Data
             "ExternalId",
             "SeriesPresentationUniqueKey",
             "ShowId",
-            "OwnerId"
+            "OwnerId",
+            "MinHoursBetweenReplays",
         };
 
         private static readonly string _retriveItemColumnsSelectQuery = $"select {string.Join(',', _retriveItemColumns)} from TypedBaseItems where guid = @guid";
@@ -466,8 +468,8 @@ namespace Emby.Server.Implementations.Data
 
         private const string SaveItemCommandText =
             @"replace into TypedBaseItems
-            (guid,type,data,Path,StartDate,EndDate,ChannelId,IsMovie,IsSeries,EpisodeTitle,IsRepeat,CommunityRating,CustomRating,IndexNumber,IsLocked,Name,OfficialRating,MediaType,Overview,ParentIndexNumber,PremiereDate,ProductionYear,ParentId,Genres,InheritedParentalRatingValue,SortName,ForcedSortName,RunTimeTicks,Size,DateCreated,DateModified,PreferredMetadataLanguage,PreferredMetadataCountryCode,Width,Height,DateLastRefreshed,DateLastSaved,IsInMixedFolder,LockedFields,Studios,Audio,ExternalServiceId,Tags,IsFolder,UnratedType,TopParentId,TrailerTypes,CriticRating,CleanName,PresentationUniqueKey,OriginalTitle,PrimaryVersionId,DateLastMediaAdded,Album,IsVirtualItem,SeriesName,UserDataKey,SeasonName,SeasonId,SeriesId,ExternalSeriesId,Tagline,ProviderIds,Images,ProductionLocations,ExtraIds,TotalBitrate,ExtraType,Artists,AlbumArtists,ExternalId,SeriesPresentationUniqueKey,ShowId,OwnerId)
-            values (@guid,@type,@data,@Path,@StartDate,@EndDate,@ChannelId,@IsMovie,@IsSeries,@EpisodeTitle,@IsRepeat,@CommunityRating,@CustomRating,@IndexNumber,@IsLocked,@Name,@OfficialRating,@MediaType,@Overview,@ParentIndexNumber,@PremiereDate,@ProductionYear,@ParentId,@Genres,@InheritedParentalRatingValue,@SortName,@ForcedSortName,@RunTimeTicks,@Size,@DateCreated,@DateModified,@PreferredMetadataLanguage,@PreferredMetadataCountryCode,@Width,@Height,@DateLastRefreshed,@DateLastSaved,@IsInMixedFolder,@LockedFields,@Studios,@Audio,@ExternalServiceId,@Tags,@IsFolder,@UnratedType,@TopParentId,@TrailerTypes,@CriticRating,@CleanName,@PresentationUniqueKey,@OriginalTitle,@PrimaryVersionId,@DateLastMediaAdded,@Album,@IsVirtualItem,@SeriesName,@UserDataKey,@SeasonName,@SeasonId,@SeriesId,@ExternalSeriesId,@Tagline,@ProviderIds,@Images,@ProductionLocations,@ExtraIds,@TotalBitrate,@ExtraType,@Artists,@AlbumArtists,@ExternalId,@SeriesPresentationUniqueKey,@ShowId,@OwnerId)";
+            (guid,type,data,Path,StartDate,EndDate,ChannelId,IsMovie,IsSeries,EpisodeTitle,IsRepeat,CommunityRating,CustomRating,IndexNumber,IsLocked,Name,OfficialRating,MediaType,Overview,ParentIndexNumber,PremiereDate,ProductionYear,ParentId,Genres,InheritedParentalRatingValue,SortName,ForcedSortName,RunTimeTicks,Size,DateCreated,DateModified,PreferredMetadataLanguage,PreferredMetadataCountryCode,Width,Height,DateLastRefreshed,DateLastSaved,IsInMixedFolder,LockedFields,Studios,Audio,ExternalServiceId,Tags,IsFolder,UnratedType,TopParentId,TrailerTypes,CriticRating,CleanName,PresentationUniqueKey,OriginalTitle,PrimaryVersionId,DateLastMediaAdded,Album,IsVirtualItem,SeriesName,UserDataKey,SeasonName,SeasonId,SeriesId,ExternalSeriesId,Tagline,ProviderIds,Images,ProductionLocations,ExtraIds,TotalBitrate,ExtraType,Artists,AlbumArtists,ExternalId,SeriesPresentationUniqueKey,ShowId,OwnerId,MinHoursBetweenReplays)
+            values (@guid,@type,@data,@Path,@StartDate,@EndDate,@ChannelId,@IsMovie,@IsSeries,@EpisodeTitle,@IsRepeat,@CommunityRating,@CustomRating,@IndexNumber,@IsLocked,@Name,@OfficialRating,@MediaType,@Overview,@ParentIndexNumber,@PremiereDate,@ProductionYear,@ParentId,@Genres,@InheritedParentalRatingValue,@SortName,@ForcedSortName,@RunTimeTicks,@Size,@DateCreated,@DateModified,@PreferredMetadataLanguage,@PreferredMetadataCountryCode,@Width,@Height,@DateLastRefreshed,@DateLastSaved,@IsInMixedFolder,@LockedFields,@Studios,@Audio,@ExternalServiceId,@Tags,@IsFolder,@UnratedType,@TopParentId,@TrailerTypes,@CriticRating,@CleanName,@PresentationUniqueKey,@OriginalTitle,@PrimaryVersionId,@DateLastMediaAdded,@Album,@IsVirtualItem,@SeriesName,@UserDataKey,@SeasonName,@SeasonId,@SeriesId,@ExternalSeriesId,@Tagline,@ProviderIds,@Images,@ProductionLocations,@ExtraIds,@TotalBitrate,@ExtraType,@Artists,@AlbumArtists,@ExternalId,@SeriesPresentationUniqueKey,@ShowId,@OwnerId,@MinHoursBetweenReplays)";
 
         /// <summary>
         /// Save a standard item in the repo.
@@ -963,6 +965,11 @@ namespace Emby.Server.Implementations.Data
             else
             {
                 saveItemStatement.TryBind("@OwnerId", ownerId);
+            }
+
+            if (item is IHasMinHoursBetweenReplay replayable)
+            {
+                saveItemStatement.TryBind("@MinHoursBetweenReplays", replayable.MinHoursBetweenReplays);
             }
 
             saveItemStatement.MoveNext();
@@ -2104,16 +2111,17 @@ namespace Emby.Server.Implementations.Data
             var sortingFields = new HashSet<string>(query.OrderBy.Select(i => i.Item1), StringComparer.OrdinalIgnoreCase);
 
             return sortingFields.Contains(ItemSortBy.IsFavoriteOrLiked)
-                    || sortingFields.Contains(ItemSortBy.IsPlayed)
-                    || sortingFields.Contains(ItemSortBy.IsUnplayed)
-                    || sortingFields.Contains(ItemSortBy.PlayCount)
-                    || sortingFields.Contains(ItemSortBy.DatePlayed)
-                    || sortingFields.Contains(ItemSortBy.SeriesDatePlayed)
-                    || query.IsFavoriteOrLiked.HasValue
-                    || query.IsFavorite.HasValue
-                    || query.IsResumable.HasValue
-                    || query.IsPlayed.HasValue
-                    || query.IsLiked.HasValue;
+                   || sortingFields.Contains(ItemSortBy.IsPlayed)
+                   || sortingFields.Contains(ItemSortBy.IsUnplayed)
+                   || sortingFields.Contains(ItemSortBy.PlayCount)
+                   || sortingFields.Contains(ItemSortBy.DatePlayed)
+                   || sortingFields.Contains(ItemSortBy.SeriesDatePlayed)
+                   || query.IsFavoriteOrLiked.HasValue
+                   || query.IsFavorite.HasValue
+                   || query.IsResumable.HasValue
+                   || query.IsPlayed.HasValue
+                   || query.IsLiked.HasValue
+                   || query.IsReplayable.HasValue;
         }
 
         private readonly ItemFields[] _allFields = Enum.GetNames(typeof(ItemFields))
@@ -4318,6 +4326,14 @@ namespace Emby.Server.Implementations.Data
                 else
                 {
                     whereClauses.Add("((select imagepath from Chapters2 where Chapters2.ItemId=A.Guid and imagepath not null limit 1) is null)");
+                }
+            }
+
+            if (query.IsReplayable.HasValue)
+            {
+                if (query.IsReplayable.Value)
+                {
+                    whereClauses.Add("(LastPlayedDate IS NULL OR DATETIME('now') > DATETIME(LastPlayedDate,printf('+%d hours',MinHoursBetweenReplays)))");
                 }
             }
 

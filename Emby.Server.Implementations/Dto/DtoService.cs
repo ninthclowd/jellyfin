@@ -1275,6 +1275,11 @@ namespace Emby.Server.Implementations.Dto
                     dto.ChannelName = channel.Name;
                 }
             }
+
+            if (item is IHasMinHoursBetweenReplay replayable)
+            {
+                dto.MinHoursBetweenReplays = replayable.MinHoursBetweenReplays;
+            }
         }
 
         private BaseItem GetImageDisplayParent(BaseItem currentItem, BaseItem originalItem)

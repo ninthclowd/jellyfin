@@ -1741,6 +1741,7 @@ namespace Emby.Server.Implementations.Session
                 fields.Remove(ItemFields.SortName);
                 fields.Remove(ItemFields.Tags);
                 fields.Remove(ItemFields.ExtraIds);
+                fields.Remove(ItemFields.MinHoursBetweenReplays);
 
                 dtoOptions.Fields = fields.ToArray();
 

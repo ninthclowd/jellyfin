@@ -113,6 +113,8 @@ namespace MediaBrowser.Model.Users
         /// <value>Access level to SyncPlay features.</value>
         public SyncPlayUserAccessType SyncPlayAccess { get; set; }
 
+        public bool EnforceModeration { get; set; }
+
         public UserPolicy()
         {
             IsHidden = true;
@@ -161,6 +163,8 @@ namespace MediaBrowser.Model.Users
             EnablePublicSharing = true;
             EnableRemoteAccess = true;
             SyncPlayAccess = SyncPlayUserAccessType.CreateAndJoinGroups;
+
+            EnforceModeration = false;
         }
     }
 }

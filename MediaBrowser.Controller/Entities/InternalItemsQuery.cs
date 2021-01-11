@@ -265,6 +265,8 @@ namespace MediaBrowser.Controller.Entities
 
         public bool? IsDeadPerson { get; set; }
 
+        public bool? IsReplayable { get; set; } = false;
+
         public InternalItemsQuery()
         {
             AlbumArtistIds = Array.Empty<Guid>();
@@ -327,6 +329,11 @@ namespace MediaBrowser.Controller.Entities
                 }
 
                 ExcludeInheritedTags = user.GetPreference(PreferenceKind.BlockedTags);
+
+                if (user.HasPermission(PermissionKind.EnforceModeration))
+                {
+                    IsReplayable = true;
+                }
 
                 User = user;
             }

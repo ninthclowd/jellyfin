@@ -382,7 +382,8 @@ namespace Jellyfin.Server.Implementations.Users
                     SyncPlayAccess = user.SyncPlayAccess,
                     BlockedChannels = user.GetPreferenceValues<Guid>(PreferenceKind.BlockedChannels),
                     BlockedMediaFolders = user.GetPreferenceValues<Guid>(PreferenceKind.BlockedMediaFolders),
-                    BlockUnratedItems = user.GetPreferenceValues<UnratedItem>(PreferenceKind.BlockUnratedItems)
+                    BlockUnratedItems = user.GetPreferenceValues<UnratedItem>(PreferenceKind.BlockUnratedItems),
+                    EnforceModeration = user.HasPermission(PermissionKind.EnforceModeration),
                 }
             };
         }
@@ -695,6 +696,7 @@ namespace Jellyfin.Server.Implementations.Users
             user.SetPermission(PermissionKind.EnablePlaybackRemuxing, policy.EnablePlaybackRemuxing);
             user.SetPermission(PermissionKind.ForceRemoteSourceTranscoding, policy.ForceRemoteSourceTranscoding);
             user.SetPermission(PermissionKind.EnablePublicSharing, policy.EnablePublicSharing);
+            user.SetPermission(PermissionKind.EnforceModeration, policy.EnforceModeration);
 
             user.AccessSchedules.Clear();
             foreach (var policyAccessSchedule in policy.AccessSchedules)
