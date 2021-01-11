@@ -982,9 +982,32 @@ namespace Emby.Server.Implementations.Session
             EventHelper.QueueEventIfNotNull(PlaybackStopped, this, eventArgs, _logger);
         }
 
+        private void removeItemIfUnableToReplay(User user, BaseItem item)
+        {
+            if (item is IHasCanReplay replayable)
+            {
+                if(!replayable.CanReplay(user))
+                {
+                    LibraryUpdateInfo info = new LibraryUpdateInfo();
+                    info.ItemsRemoved = new[] {item.Id.ToString()};
+                    try
+                    {
+                        SendMessageToUserSessions(new List<Guid> {user.Id}, SessionMessageType.LibraryChanged, info, CancellationToken.None).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error sending LibraryChanged message");
+                    }
+                }
+            }
+        }
+
+
         private bool OnPlaybackStopped(User user, BaseItem item, long? positionTicks, bool playbackFailed)
         {
             bool playedToCompletion = false;
+
+           removeItemIfUnableToReplay(user, item);
 
             if (!playbackFailed)
             {

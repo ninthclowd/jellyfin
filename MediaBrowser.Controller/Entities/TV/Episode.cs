@@ -341,7 +341,11 @@ namespace MediaBrowser.Controller.Entities.TV
                 return true;
             }
             var data = UserDataManager.GetUserData(user, this);
-            return !data.LastPlayedDate.HasValue || DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
+            if (!data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddMinutes(1))
+            {
+                return true;
+            }
+            return DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
         }
     }
 }
