@@ -341,7 +341,7 @@ namespace MediaBrowser.Controller.Entities.TV
                 return true;
             }
             var data = UserDataManager.GetUserData(user, this);
-            return !data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
+            return !data.LastPlayedDate.HasValue || DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
         }
     }
 }
