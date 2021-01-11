@@ -208,7 +208,11 @@ namespace MediaBrowser.Controller.Entities.Movies
                 return true;
             }
             var data = UserDataManager.GetUserData(user, this);
-            return !data.LastPlayedDate.HasValue || DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(MinHoursBetweenReplays);
+            if (!data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddMinutes(1))
+            {
+                return true;
+            }
+            return DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(MinHoursBetweenReplays);
         }
     }
 }
