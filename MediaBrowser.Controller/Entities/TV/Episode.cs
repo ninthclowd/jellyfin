@@ -10,13 +10,14 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using Microsoft.Extensions.Logging;
+using Jellyfin.Data.Entities;
 
 namespace MediaBrowser.Controller.Entities.TV
 {
     /// <summary>
     /// Class Episode.
     /// </summary>
-    public class Episode : Video, IHasTrailers, IHasLookupInfo<EpisodeInfo>, IHasSeries
+    public class Episode : Video, IHasTrailers, IHasLookupInfo<EpisodeInfo>, IHasSeries, IHasCanReplay
     {
         public Episode()
         {
@@ -331,6 +332,16 @@ namespace MediaBrowser.Controller.Entities.TV
             }
 
             return hasChanges;
+        }
+
+        public bool CanReplay(User user)
+        {
+            if (!user.HasPermission(PermissionKind.EnforceModeration))
+            {
+                return true;
+            }
+            var data = UserDataManager.GetUserData(user, this);
+            return !data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
         }
     }
 }

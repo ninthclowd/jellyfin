@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Data.Entities;
 using Jellyfin.Data.Enums;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
@@ -18,7 +19,7 @@ namespace MediaBrowser.Controller.Entities.Movies
     /// <summary>
     /// Class Movie.
     /// </summary>
-    public class Movie : Video, IHasSpecialFeatures, IHasTrailers, IHasLookupInfo<MovieInfo>, ISupportsBoxSetGrouping
+    public class Movie : Video, IHasSpecialFeatures, IHasTrailers, IHasLookupInfo<MovieInfo>, ISupportsBoxSetGrouping, IHasMinHoursBetweenReplay, IHasCanReplay
     {
         public Movie()
         {
@@ -26,6 +27,8 @@ namespace MediaBrowser.Controller.Entities.Movies
             RemoteTrailers = Array.Empty<MediaUrl>();
             LocalTrailerIds = Array.Empty<Guid>();
             RemoteTrailerIds = Array.Empty<Guid>();
+            MinHoursBetweenReplays = 24;
+
         }
 
         /// <inheritdoc />
@@ -52,6 +55,8 @@ namespace MediaBrowser.Controller.Entities.Movies
 
         [JsonIgnore]
         public override bool StopRefreshIfLocalMetadataFound => false;
+
+        public int MinHoursBetweenReplays { get; set; }
 
         public override double GetDefaultPrimaryImageAspectRatio()
         {
@@ -194,6 +199,16 @@ namespace MediaBrowser.Controller.Entities.Movies
             }
 
             return list;
+        }
+
+        public bool CanReplay(User user)
+        {
+            if (!user.HasPermission(PermissionKind.EnforceModeration))
+            {
+                return true;
+            }
+            var data = UserDataManager.GetUserData(user, this);
+            return !data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddHours(MinHoursBetweenReplays);
         }
     }
 }
