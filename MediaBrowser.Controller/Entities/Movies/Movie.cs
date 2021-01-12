@@ -16,6 +16,7 @@ using MediaBrowser.Model.Providers;
 
 namespace MediaBrowser.Controller.Entities.Movies
 {
+
     /// <summary>
     /// Class Movie.
     /// </summary>
@@ -28,7 +29,6 @@ namespace MediaBrowser.Controller.Entities.Movies
             LocalTrailerIds = Array.Empty<Guid>();
             RemoteTrailerIds = Array.Empty<Guid>();
             MinHoursBetweenReplays = 24;
-
         }
 
         /// <inheritdoc />
