@@ -42,6 +42,9 @@ namespace Emby.Server.Implementations.Session
     /// </summary>
     public class SessionManager : ISessionManager, IDisposable
     {
+
+
+        private const double _delayRemoveAfterStart = 1 * 60 * 1000;
         private readonly IUserDataManager _userDataManager;
         private readonly ILogger<SessionManager> _logger;
         private readonly IEventManager _eventManager;
@@ -728,6 +731,8 @@ namespace Emby.Server.Implementations.Session
             }
 
             _userDataManager.SaveUserData(user, item, data, UserDataSaveReason.PlaybackStart, CancellationToken.None);
+
+            removeItemIfUnableToReplay(user, item);
         }
 
         /// <inheritdoc />
@@ -984,30 +989,47 @@ namespace Emby.Server.Implementations.Session
 
         private void removeItemIfUnableToReplay(User user, BaseItem item)
         {
-            if (item is IHasCanReplay replayable)
+            if (_disposed)
             {
-                if(!replayable.CanReplay(user))
+                return;
+            }
+
+            var tmr = new System.Timers.Timer();
+            tmr.Interval = _delayRemoveAfterStart;
+            tmr.Elapsed += (sender, args) =>
+            {
+                if (_disposed)
                 {
-                    LibraryUpdateInfo info = new LibraryUpdateInfo();
-                    info.ItemsRemoved = new[] {item.Id.ToString()};
-                    try
+                    return;
+                }
+
+                if (item is IReplayable replayable)
+                {
+                    if (!replayable.CanReplay(user))
                     {
-                        SendMessageToUserSessions(new List<Guid> {user.Id}, SessionMessageType.LibraryChanged, info, CancellationToken.None).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error sending LibraryChanged message");
+                        LibraryUpdateInfo info = new LibraryUpdateInfo();
+                        info.ItemsRemoved = new[] {item.Id.ToString()};
+                        try
+                        {
+                            SendMessageToUserSessions(new List<Guid> {user.Id}, SessionMessageType.LibraryChanged, info, CancellationToken.None).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error sending LibraryChanged message");
+                        }
                     }
                 }
-            }
+
+                tmr.Dispose();
+            };
+            tmr.AutoReset = false;
+            tmr.Start();
         }
 
 
         private bool OnPlaybackStopped(User user, BaseItem item, long? positionTicks, bool playbackFailed)
         {
             bool playedToCompletion = false;
-
-           removeItemIfUnableToReplay(user, item);
 
             if (!playbackFailed)
             {

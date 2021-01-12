@@ -124,7 +124,7 @@ namespace Jellyfin.Api.Controllers
             HomeSectionType[] defaults =
             {
                 HomeSectionType.SmallLibraryTiles,
-                HomeSectionType.Resume,
+                // HomeSectionType.Resume,
                 HomeSectionType.ResumeAudio,
                 HomeSectionType.LiveTv,
                 HomeSectionType.NextUp,
