@@ -521,7 +521,7 @@ namespace MediaBrowser.Controller.Entities
 
         public virtual bool IsAuthorizedToDownload(User user)
         {
-            if (this is IHasCanReplay replayable)
+            if (this is IReplayable replayable)
             {
                 if (!replayable.CanReplay(user))
                 {
@@ -533,7 +533,7 @@ namespace MediaBrowser.Controller.Entities
 
         public bool CanDownload(User user)
         {
-            if (this is IHasCanReplay replayable)
+            if (this is IReplayable replayable)
             {
                 if (!replayable.CanReplay(user))
                 {
@@ -1038,7 +1038,7 @@ namespace MediaBrowser.Controller.Entities
                 return PlayAccess.None;
             }
 
-            if (this is IHasCanReplay replayable)
+            if (this is IReplayable replayable)
             {
                 if (!replayable.CanReplay(user))
                 {
@@ -1948,7 +1948,7 @@ namespace MediaBrowser.Controller.Entities
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (this is IHasCanReplay replayable)
+            if (this is IReplayable replayable)
             {
                 if (!replayable.CanReplay(user))
                 {

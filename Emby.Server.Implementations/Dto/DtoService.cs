@@ -85,6 +85,14 @@ namespace Emby.Server.Implementations.Dto
                 var item = items[index];
                 var dto = GetBaseItemDtoInternal(item, options, user, owner);
 
+                if (item is IReplayable replayable)
+                {
+                    if (!replayable.CanReplay(user))
+                    {
+                        continue;
+                    }
+                }
+
                 if (item is LiveTvChannel tvChannel)
                 {
                     channelTuples.Add((dto, tvChannel));
@@ -1276,7 +1284,7 @@ namespace Emby.Server.Implementations.Dto
                 }
             }
 
-            if (item is IHasMinHoursBetweenReplay replayable)
+            if (item is IReplayable replayable)
             {
                 dto.MinHoursBetweenReplays = replayable.MinHoursBetweenReplays;
             }

@@ -21,7 +21,7 @@ namespace MediaBrowser.Controller.Entities.TV
     /// <summary>
     /// Class Series.
     /// </summary>
-    public class Series : Folder, IHasTrailers, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer, IHasMinHoursBetweenReplay
+    public class Series : Folder, IHasTrailers, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer
     {
         public Series()
         {
@@ -29,7 +29,6 @@ namespace MediaBrowser.Controller.Entities.TV
             LocalTrailerIds = Array.Empty<Guid>();
             RemoteTrailerIds = Array.Empty<Guid>();
             AirDays = Array.Empty<DayOfWeek>();
-            MinHoursBetweenReplays = 24 * 7;
         }
 
         public DayOfWeek[] AirDays { get; set; }
@@ -67,8 +66,6 @@ namespace MediaBrowser.Controller.Entities.TV
         /// </summary>
         /// <value>The status.</value>
         public SeriesStatus? Status { get; set; }
-
-        public int MinHoursBetweenReplays { get; set; } = 24;
 
         public override double GetDefaultPrimaryImageAspectRatio()
         {

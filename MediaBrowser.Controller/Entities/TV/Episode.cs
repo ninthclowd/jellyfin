@@ -17,7 +17,7 @@ namespace MediaBrowser.Controller.Entities.TV
     /// <summary>
     /// Class Episode.
     /// </summary>
-    public class Episode : Video, IHasTrailers, IHasLookupInfo<EpisodeInfo>, IHasSeries, IHasCanReplay
+    public class Episode : Video, IHasTrailers, IHasLookupInfo<EpisodeInfo>, IHasSeries, IReplayable
     {
         public Episode()
         {
@@ -334,6 +334,8 @@ namespace MediaBrowser.Controller.Entities.TV
             return hasChanges;
         }
 
+        public int MinHoursBetweenReplays { get; set; } = 72;
+
         public bool CanReplay(User user)
         {
             if (!user.HasPermission(PermissionKind.EnforceModeration))
@@ -341,11 +343,11 @@ namespace MediaBrowser.Controller.Entities.TV
                 return true;
             }
             var data = UserDataManager.GetUserData(user, this);
-            if (!data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddMinutes(1))
+            if (!data.LastPlayedDate.HasValue)
             {
                 return true;
             }
-            return DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(Series.MinHoursBetweenReplays);
+            return DateTime.UtcNow > data.LastPlayedDate.Value.AddHours(MinHoursBetweenReplays);
         }
     }
 }

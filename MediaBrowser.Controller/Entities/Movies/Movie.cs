@@ -19,7 +19,7 @@ namespace MediaBrowser.Controller.Entities.Movies
     /// <summary>
     /// Class Movie.
     /// </summary>
-    public class Movie : Video, IHasSpecialFeatures, IHasTrailers, IHasLookupInfo<MovieInfo>, ISupportsBoxSetGrouping, IHasMinHoursBetweenReplay, IHasCanReplay
+    public class Movie : Video, IHasSpecialFeatures, IHasTrailers, IHasLookupInfo<MovieInfo>, ISupportsBoxSetGrouping, IReplayable
     {
         public Movie()
         {
@@ -208,7 +208,7 @@ namespace MediaBrowser.Controller.Entities.Movies
                 return true;
             }
             var data = UserDataManager.GetUserData(user, this);
-            if (!data.LastPlayedDate.HasValue || DateTime.UtcNow < data.LastPlayedDate.Value.AddMinutes(1))
+            if (!data.LastPlayedDate.HasValue)
             {
                 return true;
             }
