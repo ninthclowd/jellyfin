@@ -1003,7 +1003,7 @@ namespace Emby.Server.Implementations.Session
                     return;
                 }
 
-                if (item is IReplayable replayable)
+                if (item is IHasCanReplay replayable)
                 {
                     if (!replayable.CanReplay(user))
                     {

@@ -359,7 +359,7 @@ namespace Jellyfin.Api.Controllers
                 }
             }
 
-            if (item is IReplayable replayable)
+            if (item is IHasMinHoursBetweenReplays replayable)
             {
                 replayable.MinHoursBetweenReplays = request.MinHoursBetweenReplays;
             }

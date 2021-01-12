@@ -950,7 +950,7 @@ namespace MediaBrowser.Controller.Entities
 
             if (query.IsReplayable.HasValue)
             {
-                if (item is IReplayable replayable)
+                if (item is IHasCanReplay replayable)
                 {
                     if (!replayable.CanReplay(user))
                     {

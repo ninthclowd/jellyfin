@@ -21,7 +21,7 @@ namespace MediaBrowser.Controller.Entities.TV
     /// <summary>
     /// Class Series.
     /// </summary>
-    public class Series : Folder, IHasTrailers, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer
+    public class Series : Folder, IHasTrailers, IHasDisplayOrder, IHasLookupInfo<SeriesInfo>, IMetadataContainer, IHasMinHoursBetweenReplays
     {
         public Series()
         {
@@ -29,7 +29,10 @@ namespace MediaBrowser.Controller.Entities.TV
             LocalTrailerIds = Array.Empty<Guid>();
             RemoteTrailerIds = Array.Empty<Guid>();
             AirDays = Array.Empty<DayOfWeek>();
+            MinHoursBetweenReplays = 72;
         }
+
+        public int MinHoursBetweenReplays { get; set; }
 
         public DayOfWeek[] AirDays { get; set; }
 

@@ -138,7 +138,7 @@ namespace Jellyfin.Api.Helpers
                 result.PlaySessionId = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
             }
 
-            if (item is IReplayable replayable)
+            if (item is IHasCanReplay replayable)
             {
                 if (!replayable.CanReplay(user))
                 {

@@ -85,7 +85,7 @@ namespace Emby.Server.Implementations.Dto
                 var item = items[index];
                 var dto = GetBaseItemDtoInternal(item, options, user, owner);
 
-                if (item is IReplayable replayable)
+                if (item is IHasCanReplay replayable)
                 {
                     if (!replayable.CanReplay(user))
                     {
@@ -1284,7 +1284,7 @@ namespace Emby.Server.Implementations.Dto
                 }
             }
 
-            if (item is IReplayable replayable)
+            if (item is IHasMinHoursBetweenReplays replayable)
             {
                 dto.MinHoursBetweenReplays = replayable.MinHoursBetweenReplays;
             }

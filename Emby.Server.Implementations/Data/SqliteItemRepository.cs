@@ -967,7 +967,7 @@ namespace Emby.Server.Implementations.Data
                 saveItemStatement.TryBind("@OwnerId", ownerId);
             }
 
-            if (item is IReplayable replayable)
+            if (item is IHasMinHoursBetweenReplays replayable)
             {
                 saveItemStatement.TryBind("@MinHoursBetweenReplays", replayable.MinHoursBetweenReplays);
             }
