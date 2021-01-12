@@ -2,11 +2,10 @@ ARG DOTNET_VERSION=5.0
 
 FROM node:alpine as web-builder
 ARG JELLYFIN_WEB_VERSION=master
-RUN apk add curl git zlib zlib-dev autoconf g++ make libpng-dev gifsicle alpine-sdk automake libtool make gcc musl-dev nasm python \
- && curl -L https://github.com/jellyfin/jellyfin-web/archive/${JELLYFIN_WEB_VERSION}.tar.gz | tar zxf - \
- && cd jellyfin-web-* \
- && yarn install \
- && mv dist /dist
+RUN apk add curl git zlib zlib-dev autoconf g++ make libpng-dev gifsicle alpine-sdk automake libtool make gcc musl-dev nasm python 
+RUN git clone https://github.com/ninthclowd/jellyfin-web.git
+WORKDIR /jellyfin-web
+RUN yarn install
 
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION}-buster-slim as builder
 WORKDIR /repo
@@ -26,7 +25,7 @@ ARG APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 
 COPY --from=builder /jellyfin /jellyfin
-COPY --from=web-builder /dist /jellyfin/jellyfin-web
+COPY --from=web-builder /jellyfin-web/dist /jellyfin/jellyfin-web
 
 # https://github.com/intel/compute-runtime/releases
 ARG GMMLIB_VERSION=20.3.2
