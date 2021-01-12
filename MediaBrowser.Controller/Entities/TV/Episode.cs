@@ -24,6 +24,7 @@ namespace MediaBrowser.Controller.Entities.TV
             RemoteTrailers = Array.Empty<MediaUrl>();
             LocalTrailerIds = Array.Empty<Guid>();
             RemoteTrailerIds = Array.Empty<Guid>();
+            MinHoursBetweenReplays = 72;
         }
 
         /// <inheritdoc />
@@ -334,7 +335,7 @@ namespace MediaBrowser.Controller.Entities.TV
             return hasChanges;
         }
 
-        public int MinHoursBetweenReplays { get; set; } = 72;
+        public int MinHoursBetweenReplays { get; set; }
 
         public bool CanReplay(User user)
         {
