@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -98,6 +99,11 @@ namespace MediaBrowser.XbmcMetadata.Savers
             if (!string.IsNullOrEmpty(imdb))
             {
                 writer.WriteElementString("id", imdb);
+            }
+
+            if (item is IHasMinHoursBetweenReplays replayable)
+            {
+                writer.WriteElementString("minhoursbetweenreplays", replayable.MinHoursBetweenReplays.ToString(CultureInfo.InvariantCulture));
             }
 
             if (item is MusicVideo musicVideo)

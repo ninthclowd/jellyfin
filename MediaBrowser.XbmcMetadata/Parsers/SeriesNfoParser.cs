@@ -85,6 +85,12 @@ namespace MediaBrowser.XbmcMetadata.Parsers
                         break;
                     }
 
+                case "minhoursbetweenreplays":
+                    {
+                        item.MinHoursBetweenReplays = reader.ReadElementContentAsInt();
+                        break;
+                    }
+
                 case "status":
                     {
                         var status = reader.ReadElementContentAsString();

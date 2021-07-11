@@ -121,6 +121,16 @@ namespace MediaBrowser.XbmcMetadata.Parsers
                         break;
                     }
 
+                case "minhoursbetweenreplays":
+                    {
+                        if (item is Movie movie)
+                        {
+                            movie.MinHoursBetweenReplays = reader.ReadElementContentAsInt();
+                        }
+
+                        break;
+                    }
+
                 default:
                     base.FetchDataFromXmlNode(reader, itemResult);
                     break;

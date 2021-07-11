@@ -46,6 +46,8 @@ namespace Jellyfin.XbmcMetadata.Parsers.Tests
             Assert.Equal("46639", item.ProviderIds["tmdb"]);
             Assert.Equal("253573", item.ProviderIds["tvdb"]);
 
+            Assert.Equal(63, item.MinHoursBetweenReplays);
+
             Assert.Equal(3, item.Genres.Length);
             Assert.Contains("Drama", item.Genres);
             Assert.Contains("Mystery", item.Genres);

@@ -56,6 +56,8 @@ namespace MediaBrowser.XbmcMetadata.Savers
 
             var tvdb = item.GetProviderId(MetadataProvider.Tvdb);
 
+            writer.WriteElementString("minhoursbetweenreplays", series.MinHoursBetweenReplays.ToString(CultureInfo.InvariantCulture));
+
             if (!string.IsNullOrEmpty(tvdb))
             {
                 writer.WriteElementString("id", tvdb);
