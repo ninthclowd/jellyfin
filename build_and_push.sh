@@ -1,4 +1,4 @@
 #!/bin/sh
-docker build -t ninthclowd/jellyfin:latest .
+docker build --no-cache -t ninthclowd/jellyfin:latest .
 docker push ninthclowd/jellyfin:latest
 

@@ -5,7 +5,8 @@ ARG JELLYFIN_WEB_VERSION=master
 RUN apk add curl git zlib zlib-dev autoconf g++ make libpng-dev gifsicle alpine-sdk automake libtool make gcc musl-dev nasm python3 
 RUN git clone https://github.com/ninthclowd/jellyfin-web.git
 WORKDIR /jellyfin-web
-RUN yarn install
+RUN npm install 
+RUN npm run build:production
 
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION}-buster-slim as builder
 WORKDIR /repo
