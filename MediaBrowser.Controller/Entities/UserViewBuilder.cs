@@ -924,6 +924,17 @@ namespace MediaBrowser.Controller.Entities
                 }
             }
 
+            if (query.IsReplayable.HasValue)
+            {
+                if (item is IHasCanReplay replayable)
+                {
+                    if (!replayable.CanReplay(user))
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 

@@ -782,5 +782,7 @@ namespace MediaBrowser.Model.Dto
         /// </summary>
         /// <value>The current program.</value>
         public BaseItemDto CurrentProgram { get; set; }
+
+        public int MinHoursBetweenReplays { get; set; }
     }
 }

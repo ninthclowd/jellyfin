@@ -162,6 +162,7 @@ namespace Jellyfin.Server.Migrations.Routines
                     user.SetPermission(PermissionKind.EnablePlaybackRemuxing, policy.EnablePlaybackRemuxing);
                     user.SetPermission(PermissionKind.ForceRemoteSourceTranscoding, policy.ForceRemoteSourceTranscoding);
                     user.SetPermission(PermissionKind.EnablePublicSharing, policy.EnablePublicSharing);
+                    user.SetPermission(PermissionKind.EnforceModeration, policy.EnforceModeration);
 
                     foreach (var policyAccessSchedule in policy.AccessSchedules)
                     {

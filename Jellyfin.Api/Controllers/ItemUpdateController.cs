@@ -358,6 +358,11 @@ namespace Jellyfin.Api.Controllers
                     break;
                 }
             }
+
+            if (item is IHasMinHoursBetweenReplay replayable)
+            {
+                replayable.MinHoursBetweenReplays = request.MinHoursBetweenReplays;
+            }
         }
 
         private SeriesStatus? GetSeriesStatus(BaseItemDto item)

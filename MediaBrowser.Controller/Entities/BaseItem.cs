@@ -869,11 +869,25 @@ namespace MediaBrowser.Controller.Entities
 
         public virtual bool IsAuthorizedToDownload(User user)
         {
+            if (this is IHasCanReplay replayable)
+            {
+                if (!replayable.CanReplay(user))
+                {
+                    return false;
+                }
+            }
             return user.HasPermission(PermissionKind.EnableContentDownloading);
         }
 
         public bool CanDownload(User user)
         {
+            if (this is IHasCanReplay replayable)
+            {
+                if (!replayable.CanReplay(user))
+                {
+                    return false;
+                }
+            }
             return CanDownload() && IsAuthorizedToDownload(user);
         }
 
@@ -1029,6 +1043,14 @@ namespace MediaBrowser.Controller.Entities
             if (!user.HasPermission(PermissionKind.EnableMediaPlayback))
             {
                 return PlayAccess.None;
+            }
+
+            if (this is IHasCanReplay replayable)
+            {
+                if (!replayable.CanReplay(user))
+                {
+                    return PlayAccess.None;
+                }
             }
 
             // if (!user.IsParentalScheduleAllowed())
@@ -1672,6 +1694,13 @@ namespace MediaBrowser.Controller.Entities
                 throw new ArgumentNullException(nameof(user));
             }
 
+            if (this is IHasCanReplay replayable)
+            {
+                if (!replayable.CanReplay(user))
+                {
+                    return false;
+                }
+            }
             return IsParentalAllowed(user);
         }
 

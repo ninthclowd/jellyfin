@@ -297,6 +297,8 @@ namespace MediaBrowser.Controller.Entities
 
         public bool? IsDeadPerson { get; set; }
 
+        public bool? IsReplayable { get; set; } = false;
+
         /// <summary>
         /// Gets or sets a value indicating whether album sub-folders should be returned if they exist.
         /// </summary>
@@ -358,6 +360,10 @@ namespace MediaBrowser.Controller.Entities
             }
 
             ExcludeInheritedTags = user.GetPreference(PreferenceKind.BlockedTags);
+            if (user.HasPermission(PermissionKind.EnforceModeration))
+            {
+                IsReplayable = true;
+            }
 
             User = user;
         }
